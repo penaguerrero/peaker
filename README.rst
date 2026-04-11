@@ -17,13 +17,17 @@ STScI Package Template
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
-To use this package template, see instructions for
-`GitHub's creating a repository from a template <https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template>`_.
 
-After you have created your new repository from this template,
-please go through all the files in your new repository carefully
-and customize it as you see fit. Please also refer to
-`STScI style guides <https://github.com/spacetelescope/style-guides>`_.
+This package is designed to provide a report that shows the state of the
+current memory usage of the mission's calibration pipeline, and help set
+the programming goals for future builds.
+
+
+
+Installation
+------------
+
+Install with ```pip install peaker```.
 
 
 License
@@ -35,7 +39,7 @@ See `LICENSE.rst` for more information.
 Contributing
 ------------
 
-We love contributions! `packagename` is open source,
+We love contributions! `peaker` is open source,
 built on open source, and we'd love to have you hang out in our community.
 
 **Imposter syndrome disclaimer**: We want your help. No, really.
