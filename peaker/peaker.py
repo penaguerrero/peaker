@@ -87,7 +87,7 @@ def main():
     # Get relevant xml files from artifactory
     if not skip_download_artifacts:
         outdir = get_artifacts(credentials_file, art_repo, py_version,
-                                                     outdir=xmldir, start_date=start_date, end_date=end_date)
+                               outdir=xmldir, start_date=start_date, end_date=end_date)
     else:
         if xmldir is None:
             raise ValueError("No XML directory specified.")

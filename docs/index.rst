@@ -21,7 +21,7 @@ at the end of the period with respect to the start of the period).
 .. toctree::
    :maxdepth: 2
 
-   peaker.description.rst
+   peaker/description.rst
 
 
 Reference/API

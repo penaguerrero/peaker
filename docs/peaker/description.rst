@@ -12,10 +12,10 @@ The code requires only one input, a text file with the Artifactory user credenti
 This file should only contain two variable with their corresponding values as
 shown below:
 
-```
-ART_USERNAME = username
-ART_API_KEY = JYXpBrw4zRnpTh4bBQyqyk1XW1iW1Qg7NH42CGDR9TqznjxjQKSh2cFw9VzkKynNLdspCfabc
-```
+`ART_USERNAME = username`
+
+`ART_API_KEY = JYXpBrw4zRnpTh4bBQyqyk1XW1iW1Qg7NH42CGDR9TqznjxjQKSh2cFw9VzkKynNLdspCfabc`
+
 
 Optional arguments
 ------------------
@@ -47,11 +47,11 @@ There are a few outputs of the program:
 1. A directory called `xmls` will be created in the same path as where the
    program is run. All the files downloaded from Artifactory will be there.
 
-2. A `csv` file will be created at the same level as the `xmls` directory.
+2. A `csv` file will be created in the `xmls` directory.
    This file contains all the data obtained from the `xml` files that were
    successful pipeline runs.
 
-3. A directory called `plots` will be created inside the `xmls` directory.
+3. A directory called `plots` will be created in the `xmls` directory.
    This directory contains a plot per regression test name. The test names
    are unique since it is a combination of the test name and the instrument
    mode tested. The instrument mode is obtained from the `class` the test
