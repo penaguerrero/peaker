@@ -97,7 +97,7 @@ def main():
     tests_ran, local_sdate, local_edate = parse_xmls(outdir)
 
     # Create table of tests, versions, results, and print it in a csv file
-    report_table = generate_report_table(mission, outdir, tests_ran, local_sdate, local_edate, pools)
+    report_table = generate_report_table(mission, outdir, tests_ran, local_sdate, local_edate, pools=pools)
 
     # Make the plots
     plots = mk_plots(tests_ran, outdir)
