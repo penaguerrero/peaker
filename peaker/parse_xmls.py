@@ -2,6 +2,7 @@
 
 from glob import glob
 from datetime import datetime, UTC
+from zoneinfo import ZoneInfo
 from xml.etree import ElementTree as ET
 
 
@@ -58,13 +59,15 @@ def _parse_single_xml(filename):
     return test_date, failures, peakmem_dict
 
 
-def parse_xmls(outdir):
+def parse_xmls(outdir, localtz):
     """Parse all the XML files and store the data into a dictionary.
 
     Parameters
     ----------
     outdir : pathlib.Path
         Full path for the output directory.
+    localtz : str
+        Local timezone for peaker outputs.
 
     Returns
     -------
@@ -94,7 +97,7 @@ def parse_xmls(outdir):
         ut_test_date, failures, peakmem_dict = _parse_single_xml(xmlfile)
 
         # Convert timestamp from UTC to local time
-        test_date = ut_test_date.astimezone()
+        test_date = ut_test_date.astimezone(ZoneInfo(localtz))
         if test_date <= oldest_date:
             oldest_date = test_date
 

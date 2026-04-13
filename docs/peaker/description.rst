@@ -32,6 +32,9 @@ Optional arguments
 ``--period or -p``
     Period of time to show, input should be in the format year-month-day, local time, e.g. -p=2026-01-23to2026-02-27.
 
+``--timezone or -t``
+    Timezone to convert UTC time from xml files in the plots and report, e.g. -t=GMT. Default is EST.
+
 ``--version or -v``
     Python version of the results to get via xml files, e.g. -v=3.11. Default is 3.12.
 

@@ -3,6 +3,18 @@
 import numpy as np
 
 
+TIMEZONES = {
+    "CT": "America/Chicago",
+    "MT": "America/Denver",
+    "PT": "America/Los_Angeles",
+    "AKT": "America/Anchorage",
+    "HST": "Pacific/Honolulu",
+    "GMT": "Europe/London",
+    "JST": "Asia/Tokyo",
+    "CST": "Australia/Sydney",
+}
+
+
 # bytes pretty-printing
 UNITS_MAPPING = [
     (1<<50, "PB"),

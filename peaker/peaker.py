@@ -12,6 +12,7 @@ from peaker.table_utils import generate_report_table
 from peaker.pdf_utils import create_pdf
 from peaker.jwst_utils import ART_JWST_REPO, POOLS_JWST
 from peaker.roman_utils import ART_ROMAN_REPO, POOLS_ROMAN
+from peaker.utils import TIMEZONES
 
 
 def main():
@@ -37,7 +38,14 @@ def main():
                         default=None,
                         help="Period of time to show, input should be in the format year-month-day, "
                              "local time, e.g. -p=2026-01-23to2026-02-27")
+    parser.add_argument("--timezone", "-t",
+                        dest="localtimezone",
+                        action="store",
+                        default="EST",
+                        help="Timezone to convert UTC time from xml files in the plots and report, "
+                             "e.g. -t=GMT")
     parser.add_argument("--version", "-v",
+                        dest="py_version",
                         action="store",
                         default="3.12",
                         help="Python version of the results to get via xml files, e.g. -v=3.11")
@@ -55,8 +63,13 @@ def main():
     mission = args.mission
     days = args.days
     period = args.period
-    py_version = "py" + args.version
+    localtimezone = args.localtimezone
+    py_version = "py" + args.py_version
     skip_download_artifacts = args.skip_download_artifacts
+
+    # Set the local timezone
+    localtz = TIMEZONES[localtimezone]
+    print("Loal timezone set to {}".format(localtz))
 
     # Get the path where to find xml files
     if xmldir is not None:
@@ -94,7 +107,7 @@ def main():
         outdir = xmldir
 
     # Store memory info in a dictionary of test name and points per date
-    tests_ran, local_sdate, local_edate = parse_xmls(outdir)
+    tests_ran, local_sdate, local_edate = parse_xmls(outdir, localtz)
 
     # Create table of tests, versions, results, and print it in a csv file
     report_table = generate_report_table(mission, outdir, tests_ran, local_sdate, local_edate, pools=pools)
