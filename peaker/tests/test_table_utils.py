@@ -17,7 +17,7 @@ def test_generate_report_table(tmpdir):
     e_date = datetime.strptime("2026-02-13 00:07:45.258429+00:00", date_format).date()
 
     # Create the dictionary of the tests
-    tests_ran, oldest_date, latest_date = parse_xmls(data_dir, "EST")
+    tests_ran, oldest_date, latest_date = parse_xmls(data_dir, "America/New_York")
 
     # Create table of tests, versions, results, and print it in a csv file
     report_table = generate_report_table(mission, tmpdir, tests_ran, s_date, e_date)

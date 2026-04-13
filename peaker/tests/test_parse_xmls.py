@@ -9,7 +9,7 @@ def test_parse_xmls():
     data_dir = script_dir / "Data"
 
     # Test the function
-    tests_ran, oldest_date, latest_date = parse_xmls(data_dir, "EST")
+    tests_ran, oldest_date, latest_date = parse_xmls(data_dir, "America/New_York")
 
     # Set the expected oldest and latest dates
     date_format = "%Y-%m-%d"

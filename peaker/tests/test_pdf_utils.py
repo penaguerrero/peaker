@@ -15,7 +15,7 @@ def test_create_pdf(tmpdir):
     py_version = "py3.12"
 
     # Create the dictionary of the tests
-    tests_ran, oldest_date, latest_date = parse_xmls(data_dir, "EST")
+    tests_ran, oldest_date, latest_date = parse_xmls(data_dir, "America/New_York")
 
     # Create table of tests, versions, results, and print it in a csv file
     report_table = generate_report_table(mission, tmpdir, tests_ran, latest_date, oldest_date)
