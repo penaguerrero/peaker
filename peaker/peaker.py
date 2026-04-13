@@ -68,8 +68,11 @@ def main():
     skip_download_artifacts = args.skip_download_artifacts
 
     # Set the local timezone
-    localtz = TIMEZONES[localtimezone]
-    print("Loal timezone set to {}".format(localtz))
+    if localtimezone in TIMEZONES:
+        localtz = TIMEZONES[localtimezone]
+    else:
+        localtz = "America/New_York"
+    print("Local timezone set to {}".format(localtz))
 
     # Get the path where to find xml files
     if xmldir is not None:
