@@ -1,15 +1,7 @@
-STScI Package Template
-======================
+Peaker
+======
 
-.. image:: https://readthedocs.org/projects/peaker/badge/?version=latest
-    :target: https://peaker.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
-
-.. image:: https://github.com/spacetelescope/peaker/workflows/CI/badge.svg
-    :target: https://github.com/spacetelescope/peaker/actions
-    :alt: GitHub Actions CI Status
-
-.. image:: https://codecov.io/gh/spacetelescope/peaker/branch/main/graph/badge.svg
+.. image:: https://github.com/spacetelescope/peaker/actions/workflows/tests.yml/badge.svg
     :target: https://codecov.io/gh/spacetelescope/peaker
     :alt: Coverage Status
 

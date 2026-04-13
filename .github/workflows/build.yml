@@ -15,13 +15,6 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v2
     with:
       upload_to_pypi: ${{ (github.event_name == 'release') && (github.event.action == 'released') }}
-      targets: |
-        # Linux wheels
-        - cp3*-manylinux_x86_64
-        # MacOS wheels
-        - cp3*-macosx_x86_64
-        # MacOS arm64 wheels
-        - cp3*-macosx_arm64
       sdist: true
       test_command: python -c "import peaker"
     secrets:
