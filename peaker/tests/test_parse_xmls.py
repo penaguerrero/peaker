@@ -11,9 +11,13 @@ def test_parse_xmls():
     # Test the function
     tests_ran, oldest_date, latest_date = parse_xmls(data_dir)
 
+    # Set the expected oldest and latest dates
     date_format = "%Y-%m-%d"
     expected_oldest_date = datetime.strptime("2026-02-09", date_format).date()
     expected_latest_date = datetime.strptime("2026-02-13", date_format).date()
+    # Make sure the dates are in local time
+    expected_oldest_date = expected_oldest_date.astimezone()
+    expected_latest_date = expected_latest_date.astimezone()
 
     assert len(tests_ran) == 5
     assert oldest_date == expected_oldest_date
