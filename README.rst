@@ -1,6 +1,10 @@
 Peaker
 ======
 
+.. image:: https://github.com/spacetelescope/peaker/workflows/CI/badge.svg
+    :target: https://github.com/spacetelescope/peaker/actions
+    :alt: GitHub Actions CI Status
+
 .. image:: https://github.com/spacetelescope/peaker/actions/workflows/tests.yml/badge.svg
     :target: https://codecov.io/gh/spacetelescope/peaker
     :alt: Coverage Status
