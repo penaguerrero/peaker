@@ -10,9 +10,10 @@ Peaker
     :alt: Powered by Astropy Badge
 
 
-This package is designed to provide a report that shows the state of the
-current memory usage of the mission's calibration pipeline, and help set
-the programming goals for future builds.
+This package is designed to provide a PDF report of a calibration pipeline's regression
+tests that keep track of the memory peaks, and help set the programming goals for
+future builds. The PDF contains plots and a table with all said tests. The package
+requires user credentials to Artifactory, and, for now, it works for JWST and ROMAN.
 
 
 
