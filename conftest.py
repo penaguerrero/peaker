@@ -6,7 +6,7 @@ except ImportError:
     TESTED_VERSIONS = {}
 
 try:
-    from packagename import __version__ as version
+    from peaker import __version__ as version
 except ImportError:
     version = 'unknown'
 
@@ -14,8 +14,8 @@ except ImportError:
 # from the list of packages for which version numbers are displayed
 # when running the tests.
 PYTEST_HEADER_MODULES['astropy'] = 'astropy'
-PYTEST_HEADER_MODULES.pop('Matplotlib')
-PYTEST_HEADER_MODULES.pop('Pandas')
-PYTEST_HEADER_MODULES.pop('h5py')
+PYTEST_HEADER_MODULES['Matplotlib'] = 'Matplotlib'
+PYTEST_HEADER_MODULES['fpdf2'] = 'fpdf2'
+PYTEST_HEADER_MODULES['pyartifactory'] = 'pyartifactory'
 
-TESTED_VERSIONS['packagename'] = version
+TESTED_VERSIONS['peaker'] = version
