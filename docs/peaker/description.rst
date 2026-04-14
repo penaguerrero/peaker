@@ -14,7 +14,7 @@ shown below:
 
 `ART_USERNAME = username`
 
-`ART_API_KEY = JYXpBrw4zRnpTh4bBQyqyk1XW1iW1Qg7NH42CGDR9TqznjxjQKSh2cFw9VzkKynNLdspCfabc`
+`ART_API_KEY = api_key_here`
 
 
 Optional arguments
@@ -27,16 +27,19 @@ Optional arguments
     Name of the mission to analyze, i.e. -m=roman. Default is jwst.
 
 ``--days or -d``
-    Number of days to show, e.g. -d=5 will show today and the last 4 days back.
+    Number of days to show, e.g. -d=5 will show today and the last 4 days back. Default is None.
 
 ``--period or -p``
-    Period of time to show, input should be in the format year-month-day, local time, e.g. -p=2026-01-23to2026-02-27.
+    Period of time to show, input should be in the format year-month-day, local time, e.g. -p=2026-01-23to2026-02-27. Default is download everything to today.
 
 ``--timezone or -t``
     Timezone to convert UTC time from xml files in the plots and report, e.g. -t=GMT. Default is EST.
+    Note: The dictionary created for this function is for convenience but it is incomplete, if you need
+    another timezone not listed in TIMEZONES, you can use `zoneinfo.available_timezones()` to list all
+    available timezones in your system.
 
 ``--version or -v``
-    Python version of the results to get via xml files, e.g. -v=3.11. Default is 3.12.
+    Python version tested in the regression tests, e.g. -v=3.11. Default is 3.12.
 
 ``-s``
     Skip downloading the xml files. This option requires the -x flag as well.
