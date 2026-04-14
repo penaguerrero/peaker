@@ -27,13 +27,16 @@ Optional arguments
     Name of the mission to analyze, i.e. -m=roman. Default is jwst.
 
 ``--days or -d``
-    Number of days to show, e.g. -d=5 will show today and the last 4 days back. Default is None
+    Number of days to show, e.g. -d=5 will show today and the last 4 days back. Default is None.
 
 ``--period or -p``
     Period of time to show, input should be in the format year-month-day, local time, e.g. -p=2026-01-23to2026-02-27. Default is download everything to today.
 
 ``--timezone or -t``
     Timezone to convert UTC time from xml files in the plots and report, e.g. -t=GMT. Default is EST.
+    Note: The dictionary created for this function is for convenience but it is incomplete, if you need
+    another timezone not listed in TIMEZONES, you can use `zoneinfo.available_timezones()` to list all
+    available timezones in your system.
 
 ``--version or -v``
     Python version tested in the regression tests, e.g. -v=3.11. Default is 3.12.

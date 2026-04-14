@@ -40,9 +40,10 @@ Usage
 
 Run `peaker` from the terminal as:
 
-```
-peaker user_credentials.txt -p=2025-10-01to2026-03-26
-```
+.. code-block:: bash
+
+    peaker somewhere/user_credentials.txt -p=2025-10-01to2026-03-26
+
 
 
 Optional arguments
@@ -55,7 +56,7 @@ Optional arguments
     Name of the mission to analyze, i.e. -m=roman. Default is jwst.
 
 ``--days or -d``
-    Number of days to show, e.g. -d=5 will show today and the last 4 days back. Default is None
+    Number of days to show, e.g. -d=5 will show today and the last 4 days back. Default is None.
 
 ``--period or -p``
     Period of time to show, input should be in the format year-month-day, local time, e.g. -p=2026-01-23to2026-02-27. Default is download everything to today.
@@ -105,6 +106,24 @@ There are a few outputs of the program:
    the first 3 and last 3 memory peaks, respectively. If there are less
    than 5 data points, the difference is calculated from the last minus
    the first memory peak.
+
+
+
+Documentation
+-------------
+
+To build the documents locally, in the terminal do:
+
+.. code-block:: bash
+
+    sphinx-build [docs_dir] [output_dir]
+
+or
+
+.. code-block:: bash
+
+    cd docs/
+    make html
 
 
 
