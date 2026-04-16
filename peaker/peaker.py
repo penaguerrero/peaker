@@ -31,12 +31,13 @@ def main():
                         action="store",
                         default=None,
                         type=int,
-                        help="Number of days to show, e.g. -d=5 will show today and the last 4 days back.")
+                        help="Number of days to show, e.g. -d=5 will show today and the last 4 days back. Default is"
+                             "None.")
     parser.add_argument("--period", "-p",
                         action="store",
                         default=None,
                         help="Period of time to show. Input should be start to end, in the format year-month-day, "
-                             "local time, e.g. -p=2026-01-23to2026-02-27")
+                             "local time, e.g. -p=2026-01-23to2026-02-27. Default is download everything up to today.")
     parser.add_argument("--timezone", "-t",
                         dest="localtz",
                         action="store",
@@ -47,7 +48,7 @@ def main():
                         dest="py_version",
                         action="store",
                         default="3.12",
-                        help="Python version of the results to get via xml files, e.g. -v=3.11")
+                        help="Python version tested in the regression tests, e.g. -v=3.11")
     parser.add_argument("-s",
                         dest="skip_download_artifacts",
                         action="store_true",
