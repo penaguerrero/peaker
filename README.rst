@@ -59,8 +59,8 @@ Optional arguments
     Number of days to show, e.g. -d=5 will show today and the last 4 days back. Default is None.
 
 ``--period or -p``
-    Period of time to show, input should be in the format year-month-day, local time, e.g.
-    -p=2026-01-23to2026-02-27. Default is download everything up to today.
+    Period of time to show. Input should be start to end, in the format year-month-day,
+    local time, e.g. -p=2026-01-23to2026-02-27. Default is download everything up to today.
 
 ``--timezone or -t``
     Timezone to convert UTC time from xml files in the plots and report, e.g. -t=GMT. Default is EST.
@@ -73,7 +73,8 @@ Optional arguments
         print(zoneinfo.available_timezones())
 
 ``--version or -v``
-    Python version tested in the regression tests, e.g. -v=3.11. Default is 3.12.
+    Python version tested in the regression tests, e.g. -v=3.11. Default is 3.12. Regression
+    Tests will usually test at least 3 versions of Python.
 
 ``-s``
     Skip downloading the xml files. This option requires the -x flag as well.
