@@ -4,6 +4,8 @@ from glob import glob
 from datetime import datetime, UTC
 from zoneinfo import ZoneInfo
 from xml.etree import ElementTree as ET
+from dataclasses import dataclass
+from pathlib import Path
 
 
 def _parse_single_xml(filename):
@@ -59,29 +61,42 @@ def _parse_single_xml(filename):
     return test_date, failures, peakmem_dict
 
 
-def parse_xmls(outdir, localtz):
+@dataclass
+class Output:
+    """Structure containing output information."""
+    outdir: Path
+    tests_ran: dict
+    local_sdate: None
+    local_edate: None
+    report_table: list
+    plots: list
+
+
+def parse_xmls(xmldir, localtz):
     """Parse all the XML files and store the data into a dictionary.
 
     Parameters
     ----------
-    outdir : pathlib.Path
-        Full path for the output directory.
+    xmldir : pathlib.Path
+        Full path for directory where to find the xml files.
     localtz : str
         Local timezone for peaker outputs.
 
     Returns
     -------
-    tests_ran : dict
-        The dictionary will have the test name are the keys and a subdictionary
-        containing an array of dates, peak memory, and corresponding run times.
-    oldest_date : datetime.datetime
-        Start date (Local time) for files with data.
-    latest_date : datetime.datetime
-        End date (Local time) for files with data.
+    output : class
+        A dataclass with the following elements:
+        outdir - Full path for the output directory.
+        tests_ran - Dictionary will have the test name are the keys and a subdictionary
+            containing an array of dates, peak memory, and corresponding run times.
+        local_sdate - Start date (Local time) for files with data.
+        local_edate - End date (Local time) for files with data.
+        report_table - Table of test data organized by test name and class.
+        plots - List of plots.
 
     """
     # Make a list of all files in output directory
-    xml_files = [xmlfile for xmlfile in glob(str(outdir) + "/*.xml")]
+    xml_files = [xmlfile for xmlfile in glob(str(xmldir) + "/*.xml")]
     
     print(" Parsing xml ", len(xml_files), " files ... ")
     if len(xml_files) == 0:
@@ -144,5 +159,10 @@ def parse_xmls(outdir, localtz):
     for test_name in tests_ran:
         print("   Data points for {}: {}".format(test_name, len(tests_ran[test_name]["date"])))
 
-    return tests_ran, oldest_date.date(), latest_date.date()
+    # Create an output directory
+    outdir = Path.cwd() / "peaker_outputs"
+    if not outdir.exists():
+        outdir.mkdir()
+
+    return Output(outdir, tests_ran, oldest_date.date(), latest_date.date(), [], [])
 

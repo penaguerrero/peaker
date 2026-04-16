@@ -12,7 +12,6 @@ from peaker.table_utils import generate_report_table
 from peaker.pdf_utils import create_pdf
 from peaker.jwst_utils import ART_JWST_REPO, POOLS_JWST
 from peaker.roman_utils import ART_ROMAN_REPO, POOLS_ROMAN
-from peaker.utils import TIMEZONES
 
 
 def main():
@@ -36,14 +35,14 @@ def main():
     parser.add_argument("--period", "-p",
                         action="store",
                         default=None,
-                        help="Period of time to show, input should be in the format year-month-day, "
+                        help="Period of time to show. Input should be start to end, in the format year-month-day, "
                              "local time, e.g. -p=2026-01-23to2026-02-27")
     parser.add_argument("--timezone", "-t",
-                        dest="localtimezone",
+                        dest="localtz",
                         action="store",
                         default="EST",
-                        help="Timezone to convert UTC time from xml files in the plots and report, "
-                             "e.g. -t=GMT")
+                        help="Timezone to convert UTC time from xml files in the plots and report, e.g. -t=GMT. "
+                             "The code takes all IANA time zone strings.")
     parser.add_argument("--version", "-v",
                         dest="py_version",
                         action="store",
@@ -63,16 +62,9 @@ def main():
     mission = args.mission
     days = args.days
     period = args.period
-    localtimezone = args.localtimezone
+    localtz = args.localtz
     py_version = "py" + args.py_version
     skip_download_artifacts = args.skip_download_artifacts
-
-    # Set the local timezone
-    if localtimezone in TIMEZONES:
-        localtz = TIMEZONES[localtimezone]
-    else:
-        localtz = "America/New_York"
-    print("Local timezone set to {}".format(localtz))
 
     # Get the path where to find xml files
     if xmldir is not None:
@@ -100,26 +92,33 @@ def main():
         end_date = datetime.strptime(end_date, "%Y-%m-%d")
         end_date = end_date.astimezone(timezone.utc)
 
+    # Sanity check
+    if end_date < start_date:
+        print("Start date must be before end date. Switching start date to end date and vice versa.")
+        new_end_date = start_date
+        new_start_date = end_date
+        start_date = new_start_date
+        end_date = new_end_date
+
     # Get relevant xml files from artifactory
     if not skip_download_artifacts:
-        outdir = get_artifacts(credentials_file, art_repo, py_version,
+        xmldir = get_artifacts(credentials_file, art_repo, py_version,
                                outdir=xmldir, start_date=start_date, end_date=end_date)
     else:
         if xmldir is None:
             raise ValueError("No XML directory specified.")
-        outdir = xmldir
 
     # Store memory info in a dictionary of test name and points per date
-    tests_ran, local_sdate, local_edate = parse_xmls(outdir, localtz)
+    output = parse_xmls(xmldir, localtz)
 
     # Create table of tests, versions, results, and print it in a csv file
-    report_table = generate_report_table(mission, outdir, tests_ran, local_sdate, local_edate, pools=pools)
+    generate_report_table(output, mission, pools=pools)
 
     # Make the plots
-    plots = mk_plots(tests_ran, outdir)
+    mk_plots(output)
 
     # Create PDF report with table and plots
-    create_pdf(mission, local_sdate, local_edate, py_version, outdir, report_table, plots)
+    create_pdf(output, mission, py_version)
 
     print("\nFinished! \n")
 

@@ -1,5 +1,5 @@
 """Utilities to find and download .xml files from with Artifactory repository"""
-
+import pydantic
 from pyartifactory import Artifactory
 from pathlib import Path
 
@@ -9,16 +9,16 @@ def _get_artifactory_credentials(credentials_file):
     art_username, art_api_key = None, None
     with open(credentials_file, "r") as f:
         for line in f.readlines():
-            line = line.replace("\n", "")
+            line = line.strip()
             if "username" in line.lower():
-                art_username = line.split("=")[1]
+                art_username = line.split("=")[1].strip()
             elif "key" in line.lower():
-                art_api_key = line.split("=")[1]
+                art_api_key = pydantic.types.SecretStr(line.split("=")[1].strip())
             if art_username is not None and art_api_key is not None:
                 break
     if art_username is None and art_api_key is None:
         raise ValueError("No credentials provided.")
-    return art_username.strip(), art_api_key.strip()
+    return art_username, art_api_key
 
 
 def get_artifacts(credentials_file, art_repo, py_version, outdir=None, start_date=None, end_date=None):
