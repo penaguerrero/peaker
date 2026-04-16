@@ -108,41 +108,36 @@ def _get_instrument_mode(table_content, pools):
     return inst_mode
 
 
-def generate_report_table(mission, outdir, tests_ran, start_date, end_date, pools=None, show_table=False):
+def generate_report_table(output, mission, pools=None, show_table=False):
     """
     Generates an astropy Table and prints it in a csv file.
 
     Parameters
     ----------
+    output : class
+        A dataclass with the following elements:
+        outdir - Full path for the output directory.
+        tests_ran - Dictionary will have the test name are the keys and a subdictionary
+            containing an array of dates, peak memory, and corresponding run times.
+        local_sdate - Start date (Local time) for files with data.
+        local_edate - End date (Local time) for files with data.
+        report_table - Table of test data organized by test name and class.
+        plots - List of plots.
     mission : str
         Mission name.
-    outdir : pathlib.Path
-        Full path for the output directory.
-    tests_ran : dict
-        All data read from the xml files.
-    start_date : datetime.date
-        Start date of testing period in local timezone.
-    end_date : datetime.date
-        End date of testing period in local timezone.
     pools : dict
         Dictionary of pool names and their respective meanings.
     show_table : bool
         Print on-screen the table as well as the csv file.
-
-    Returns
-    -------
-    rt : astropy.Table
-        Test data organized by test name and class.
-
     """
     # Create the table content
-    table_content = _mk_table_content(tests_ran)
+    table_content = _mk_table_content(output.tests_ran)
 
     # Define the report table
     rt = Table()
 
     # Set the table title
-    table_title = "Regression_Tests_Memory_Peaks_from_{}_to_{}".format(start_date, end_date)
+    table_title = "Regression_Tests_Memory_Peaks_from_{}_to_{}".format(output.local_sdate, output.local_edate)
     rt.meta["name"] = table_title
 
     # Fill in the table using the dictionary of all tests ran
@@ -165,13 +160,12 @@ def generate_report_table(mission, outdir, tests_ran, start_date, end_date, pool
     rt["Median_end"] = [test_dict["end_median"] for _, test_dict in table_content.items()]
     rt["Mean_end"] = [test_dict["end_mean"] for _, test_dict in table_content.items()]
     rt["Std_dev_end"] = [test_dict["end_std"] for _, test_dict in table_content.items()]
+    output.report_table = rt
 
     if show_table:
         print(rt)
 
     csv_file = mission.upper() + "_" + table_title+".csv"
-    csv_file = str(outdir / csv_file)
+    csv_file = str(output.outdir / csv_file)
     rt.write(csv_file, format='csv', overwrite=True)
     print(" Table saved: ", os.path.abspath(csv_file))
-
-    return rt

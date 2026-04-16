@@ -27,7 +27,7 @@ Inputs
 ------
 
 The code requires only one input, a text file with the Artifactory user credentials.
-This file should only contain two variable with their corresponding values as
+This file should only contain two variables with their corresponding values as
 shown below:
 
 `ART_USERNAME = username`
@@ -59,10 +59,18 @@ Optional arguments
     Number of days to show, e.g. -d=5 will show today and the last 4 days back. Default is None.
 
 ``--period or -p``
-    Period of time to show, input should be in the format year-month-day, local time, e.g. -p=2026-01-23to2026-02-27. Default is download everything to today.
+    Period of time to show, input should be in the format year-month-day, local time, e.g.
+    -p=2026-01-23to2026-02-27. Default is download everything up to today.
 
 ``--timezone or -t``
     Timezone to convert UTC time from xml files in the plots and report, e.g. -t=GMT. Default is EST.
+    The code takes all IANA time zone strings. You can get a complete list of available
+    timezones in your system with this in a python environment:
+
+     .. code-block:: bash
+
+        import zoneinfo
+        print(zoneinfo.available_timezones())
 
 ``--version or -v``
     Python version tested in the regression tests, e.g. -v=3.11. Default is 3.12.
@@ -79,11 +87,12 @@ There are a few outputs of the program:
 1. A directory called `xmls` will be created in the same path as where the
    program is run. All the files downloaded from Artifactory will be there.
 
-2. A `csv` file will be created in the `xmls` directory.
+2. A directory called `peaker_outputs` will be created at the same level
+   as the `xmls` directory. A `csv` file will be created in `peaker_outputs`.
    This file contains all the data obtained from the `xml` files that were
    successful pipeline runs.
 
-3. A directory called `plots` will be created in the `xmls` directory.
+3. A directory called `plots` will be created in the `peaker_outputs` directory.
    This directory contains a plot per regression test name. The test names
    are unique since it is a combination of the test name and the instrument
    mode tested. The instrument mode is obtained from the `class` the test

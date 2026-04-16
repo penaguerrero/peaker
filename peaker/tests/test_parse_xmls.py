@@ -9,7 +9,7 @@ def test_parse_xmls():
     data_dir = script_dir / "Data"
 
     # Test the function
-    tests_ran, oldest_date, latest_date = parse_xmls(data_dir, "America/New_York")
+    output = parse_xmls(data_dir, "America/New_York")
 
     # Set the expected oldest and latest dates
     date_format = "%Y-%m-%d"
@@ -19,6 +19,7 @@ def test_parse_xmls():
     expected_oldest_date = expected_oldest_date.astimezone().date()
     expected_latest_date = expected_latest_date.astimezone().date()
 
-    assert len(tests_ran) == 5
-    assert oldest_date == expected_oldest_date
-    assert latest_date == expected_latest_date
+    assert len(output.tests_ran) == 5
+    assert output.local_sdate == expected_oldest_date
+    assert output.local_edate == expected_latest_date
+

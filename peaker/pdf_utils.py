@@ -2,6 +2,7 @@
 
 import os
 from fpdf import FPDF
+from fpdf.enums import XPos, YPos
 
 
 def _get_plt_path(plots, test_name, test_class):
@@ -46,26 +47,25 @@ def _select_cols(report_table):
     return selected_cols, col_widths
 
 
-def create_pdf(mission, start_date, end_date, py_version, outdir, report_table, plots):
+def create_pdf(output, mission, py_version):
     """
     Creates a PDF report with plots and a table.
     
     Parameters
     ----------
+    output : class
+        A dataclass with the following elements:
+        outdir - Full path for the output directory.
+        tests_ran - Dictionary will have the test name are the keys and a subdictionary
+            containing an array of dates, peak memory, and corresponding run times.
+        local_sdate - Start date (Local time) for files with data.
+        local_edate - End date (Local time) for files with data.
+        report_table - Table of test data organized by test name and class.
+        plots - List of plots.
     mission : str
         Mission name.
-    start_date : datetime.date
-        Start date of testing period in local timezone.
-    end_date : datetime.date
-        End date of testing period in local timezone.
     py_version : str
         Version of Python tested and reported. 
-    outdir : pathlib.Path
-        Full path for the output directory.
-    report_table : astropy Table
-        Contains all data to report in the table
-    plots : list
-        Strings of full paths and names of the plots to include in the report. 
 
     Returns
     -------
@@ -74,17 +74,17 @@ def create_pdf(mission, start_date, end_date, py_version, outdir, report_table, 
     """
     
     # Get selected data from table
-    selected_cols, col_widths = _select_cols(report_table)
+    selected_cols, col_widths = _select_cols(output.report_table)
     try:
-        classnames = report_table["Class"]
+        classnames = output.report_table["Class"]
     except KeyError:
-        classnames = report_table["Instrument_mode"]
+        classnames = output.report_table["Instrument_mode"]
 
     # Create an instance of an FPDF class.
     pdf = FPDF()
 
     # Define font type and size
-    pdf_font = "Arial"
+    pdf_font = "Helvetica"
     main_title_font_size = 16
     sub_title_font_size = 13
     body_font_size = 9
@@ -94,8 +94,8 @@ def create_pdf(mission, start_date, end_date, py_version, outdir, report_table, 
     pdf.add_page()  # Add a new page.
     pdf.set_font(pdf_font, size=main_title_font_size)  # Set the font for text.
     title = "{} Regression Tests Memory Peaks from \n {} to {}".format(
-        mission.upper(), start_date, end_date)
-    pdf.multi_cell(w=0, h=10, text=title, ln=True, align="C")
+        mission.upper(), output.local_sdate, output.local_edate)
+    pdf.multi_cell(w=0, h=10, text=title, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
     # First page: worse performance, highest memory peak increment
     pdf.set_font(pdf_font, size=body_font_size)
@@ -104,37 +104,42 @@ def create_pdf(mission, start_date, end_date, py_version, outdir, report_table, 
 
     # These are all the cell parameters that can be modified:
     # Cell(width, height, text, border (0=no, 1=yes),
-    #      line break (0=right, 1=next line), align ('L', 'C', 'R'))
-    text = "Test with the highest memory peak **increment**:  {}".format(report_table["Test_name"][0])
-    pdf.cell(w=0, h=10, text=text, ln=True, align="L")
-    text = "  - Instrument mode:  {}".format(report_table["Instrument_mode"][0])
-    pdf.cell(w=0, h=10, text=text, ln=True, align="L")
+    #      new_x=XPos.RIGHT, new_y=YPos.TOP,    ->  Cursor stays to the right of the cell (same line)
+    #      new_x=XPos.LMARGIN, new_y=YPos.NEXT, ->  Moves cursor to the start of the next line (left margin)
+    #      new_x=XPos.LEFT, new_y=YPos.NEXT,  ->  Moves cursor directly below the current cell
+    #      align ('L', 'C', 'R'))
+    text = "Test with the highest memory peak **increment**:  {}".format(output.report_table["Test_name"][0])
+    pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
+    text = "  - Instrument mode:  {}".format(output.report_table["Instrument_mode"][0])
+    pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
     text = " - Memory Peak increased from beginning of period by:  {} {}".format(
-        report_table["Diff_medians"][0], report_table["Units"][0])
-    pdf.cell(w=0, h=10, text=text, ln=True, align="L")
-    plt_name = _get_plt_path(plots, report_table["Test_name"][0], classnames[0])
+        output.report_table["Diff_medians"][0], output.report_table["Units"][0])
+    pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
+    plt_name = _get_plt_path(output.plots, output.report_table["Test_name"][0], classnames[0])
     pdf.image(plt_name, x=5, y=80, w=200)  # Add an image to the page.
     pdf.set_y(265)
-    pdf.cell(200, 10, txt=f"Page {page_counter}", ln=True, align='C')
+    pdf.cell(200, 10, text=f"Page {page_counter}", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
     # Update the first table entry
     selected_cols[1].append(str(page_counter))
     # Increase the page counter
     page_counter += 1
 
+    report_table = output.report_table
+
     # Second page: best performance, highest memory peak decrement
     pdf.add_page()
     pdf.set_y(30)
     text = "Test with the highest memory peak **improvement**: {}".format(report_table["Test_name"][-1])
-    pdf.cell(w=0, h=10, text=text, ln=True, align="L")
+    pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
     text = "  - Instrument mode:  {}".format(report_table["Instrument_mode"][-1])
-    pdf.cell(w=0, h=10, text=text, ln=True, align="L")
+    pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
     text = " - Memory Peak increased from beginning of period by:  {} {}".format(
         report_table["Diff_medians"][-1], report_table["Units"][-1])
-    pdf.cell(w=0, h=10, text=text, ln=True, align="L")
-    plt_name = _get_plt_path(plots, report_table["Test_name"][-1], classnames[-1])
+    pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
+    plt_name = _get_plt_path(output.plots, report_table["Test_name"][-1], classnames[-1])
     pdf.image(plt_name, x=5, y=70, w=200)
     pdf.set_y(265)
-    pdf.cell(200, 10, txt=f"Page {page_counter}", ln=True, align='C')
+    pdf.cell(200, 10, text=f"Page {page_counter}", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
     # Update the last table entry
     selected_cols[-1].append(str(page_counter))
     # Increase the page counter
@@ -149,23 +154,23 @@ def create_pdf(mission, start_date, end_date, py_version, outdir, report_table, 
         # Only at top of the third page, add subtitle
         if i == 1:
             pdf.set_y(265)
-            pdf.cell(200, 10, txt=f"Page {page_counter}", ln=True, align='C')
+            pdf.cell(200, 10, text=f"Page {page_counter}", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
             pdf.set_y(18)
             pdf.set_font(pdf_font, size=sub_title_font_size)
             text = "The following pages present other changes in memory peak"
-            pdf.cell(w=0, h=10, text=text, ln=True, align="L")
+            pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
         pdf.set_font(pdf_font, size=body_font_size)
 
         # First plot in this page
         pdf.set_y(30)
         text = "Test name: {}".format(report_table["Test_name"][i])
-        pdf.cell(w=0, h=10, text=text, ln=True, align="L")
+        pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
         text = "  - Instrument mode: {}".format(report_table["Instrument_mode"][i])
-        pdf.cell(w=0, h=10, text=text, ln=True, align="L")
+        pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
         text = " - Peak memory change: {} {}".format(
             report_table["Diff_medians"][i], report_table["Units"][i])
-        pdf.cell(w=0, h=10, text=text, ln=True, align="L")
-        plt_name = _get_plt_path(plots, report_table["Test_name"][i], classnames[i])
+        pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
+        plt_name = _get_plt_path(output.plots, report_table["Test_name"][i], classnames[i])
         pdf.image(plt_name, x=65, y=50, w=115)
         # Add the page number where the plot can be found
         selected_cols[table_row].append(str(page_counter))
@@ -174,20 +179,20 @@ def create_pdf(mission, start_date, end_date, py_version, outdir, report_table, 
         if len(report_table["Test_name"])-1 > i + 1:
             pdf.set_y(145)
             text = "Test name: {}".format(report_table["Test_name"][i+1])
-            pdf.cell(w=0, h=10, text=text, ln=True, align="L")
+            pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
             text = "  - Instrument mode: {}".format(report_table["Instrument_mode"][i+1])
-            pdf.cell(w=0, h=10, text=text, ln=True, align="L")
+            pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
             text = " - Peak memory change: {} {}".format(
                 report_table["Diff_medians"][i+1], report_table["Units"][i+1])
-            pdf.cell(w=0, h=10, text=text, ln=True, align="L")
-            plt_name = _get_plt_path(plots, report_table["Test_name"][i+1], classnames[i+1])
+            pdf.cell(w=0, h=10, text=text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="L")
+            plt_name = _get_plt_path(output.plots, report_table["Test_name"][i+1], classnames[i+1])
             pdf.image(plt_name, x=65, y=165, w=115)
             # Add the page number where the plot can be found
             selected_cols[table_row+1].append(str(page_counter))
 
         # Increase the page counter
         pdf.set_y(265)
-        pdf.cell(200, 10, txt=f"Page {page_counter}", ln=True, align='C')
+        pdf.cell(200, 10, text=f"Page {page_counter}", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         page_counter += 1
 
     # Add table
@@ -204,7 +209,7 @@ def create_pdf(mission, start_date, end_date, py_version, outdir, report_table, 
 
     # Output the PDF to a file.
     pdf_name = "report_peak_mem_" + py_version + ".pdf"
-    pdf_path = outdir / pdf_name
+    pdf_path = output.outdir / pdf_name
     pdf.output(pdf_path)
     
     print("\nPDF generated successfully: {}".format(pdf_path))

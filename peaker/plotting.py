@@ -76,39 +76,37 @@ def _plot_test(testname, data, plt_dir, show_plt=False, show_plt_path=False):
     return plt_path
 
 
-def mk_plots(tests_ran, outdir):
+def mk_plots(output):
     """
     Creates plots for all tests ran.
     
     Parameters
     ----------
-    tests_ran: dict
-        All data read from the xml files.
-    outdir : pathlib.Path
-        Full path for the output directory.
-
-    Returns
-    -------
-    plots : list
-        Strings of full paths for all plots created.
-        
+    output : class
+        A dataclass with the following elements:
+        outdir - Full path for the output directory.
+        tests_ran - Dictionary will have the test name are the keys and a subdictionary
+            containing an array of dates, peak memory, and corresponding run times.
+        local_sdate - Start date (Local time) for files with data.
+        local_edate - End date (Local time) for files with data.
+        report_table - Table of test data organized by test name and class.
+        plots - List of plots.
     """
     
     # Create the plots directory
-    plt_dir = outdir / "plots"
+    plt_dir = output.outdir / "plots"
     plt_dir.mkdir(exist_ok=True, parents=True)
     
     # Plot every test
     print(" Making plots...")
     plots = []
     show_plt, show_plt_path = False, False
-    for test, data in tests_ran.items():
+    for test, data in output.tests_ran.items():
         plt_path = _plot_test(test, data, plt_dir,
                               show_plt=show_plt, show_plt_path=show_plt_path)
         plots.append(plt_path)
+    output.plots = plots
+
     if not show_plt_path:
         print(" Plots saved at: ", plt_dir)
-        
-    return plots
-
 

@@ -1,12 +1,5 @@
 import numpy as np
-from peaker.utils import convert_units, TIMEZONES
-
-
-def test_timezones():
-    # Test some of the local time zones
-    timezones = ["EST", "GMT", "MT", "PT"]
-    for tz in timezones:
-        assert tz in TIMEZONES
+from peaker.utils import convert_units
 
 
 def test_convert_utils():
