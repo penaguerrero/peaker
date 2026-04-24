@@ -1,4 +1,5 @@
 import os
+import pytest
 from pathlib import Path
 
 from peaker.pdf_utils import create_pdf
@@ -7,9 +8,10 @@ from peaker.table_utils import generate_report_table
 from peaker.plotting import mk_plots
 
 
-def test_create_pdf(tmpdir, expected_output):
+@pytest.mark.parametrize("mission", ["jwst", "roman"])
+def test_create_pdf(mission, tmpdir, expected_output):
     script_dir = Path(__file__).resolve().parent
-    data_dir = script_dir / "Data"
+    data_dir = script_dir / "Data" / mission
 
     # Set the function variables
     mission = "jwst"

@@ -1,7 +1,7 @@
 [project]
 name = "peaker"
 description = "My pretty cool package"
-requires-python = ">=3.7"
+requires-python = ">=3.11"
 authors = [
     { name = "Maria Pena-Guerrero" },
 ]
@@ -44,11 +44,6 @@ test = [
     "pytest-astropy-header",
     "pytest-doctestplus",
 ]
-docs = [
-    "sphinx",
-    "sphinx-automodapi",
-    "stsci_rtd_theme",
-]
 
 [build-system]
 requires = [
@@ -80,7 +75,6 @@ peaker = "peaker.peaker:main"
 minverhion = "9.0"
 norecursedirs = [
     "build",
-    "docs/_build",
 ]
 astropy_header = true
 doctest_plus = "enabled"
