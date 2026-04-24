@@ -10,14 +10,18 @@ def _get_artifactory_credentials(credentials_file):
     with open(credentials_file, "r") as f:
         for line in f.readlines():
             line = line.strip()
+            try:
+                value = line.split("=")[1].strip()
+            except IndexError:
+                raise ValueError("Bad Artifactory credentials provided.")
             if "username" in line.lower():
-                art_username = line.split("=")[1].strip()
+                art_username = value
             elif "key" in line.lower():
-                art_api_key = pydantic.types.SecretStr(line.split("=")[1].strip())
+                art_api_key = pydantic.types.SecretStr(value)
             if art_username is not None and art_api_key is not None:
                 break
     if art_username is None and art_api_key is None:
-        raise ValueError("No credentials provided.")
+        raise ValueError("No credentials found.")
     return art_username, art_api_key
 
 
