@@ -35,6 +35,9 @@ contrib = ["ruff", "ty"]
 [project.scripts]
 peaker = "peaker.peaker:main"
 
+[project.scripts]
+peaker = "peaker.peaker:main"
+
 [build-system]
 requires = [
   "setuptools>=61.2",

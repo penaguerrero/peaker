@@ -25,6 +25,67 @@ def _get_artifactory_credentials(credentials_file):
     return art_username, art_api_key
 
 
+def _list_artifacts(credentials_file, art_repo):
+    # Get artifactory Credentials
+    art_username, art_api_key = _get_artifactory_credentials(credentials_file)
+
+    # Do basic authentication
+    art = pyartifactory.Artifactory(url="https://bytesalad.stsci.edu/artifactory",
+                                    auth=(art_username, art_api_key), api_version=1)
+
+    # Get the artifacts with user credentials
+    artifacts = art.artifacts.list(art_repo, depth=2)
+
+    return art, artifacts
+
+
+def _filter_artifacts(art_repo, artifacts, start_date, end_date, py_version):
+    artifacts2download = {}
+    for artifact in artifacts.files:
+        # Proceed with download if within the desired dates
+        artifact_datetime = artifact.lastModified
+        if start_date is not None:
+            if artifact_datetime <= start_date or artifact_datetime > end_date:
+                continue
+
+        if ".xml" in artifact.uri:
+            #if "jwst" in art_repo:
+            #    # Only download if the run was in main
+            #    if "rc" not in artifact.uri:
+            #        continue
+
+            # Make sure that the file is the result of the right python version run
+            if py_version not in artifact.uri:
+                continue
+            if artifact_datetime.date() not in artifacts2download:
+                artifacts2download[artifact_datetime.date()] = [artifact]
+            else:
+                artifacts2download[artifact_datetime.date()].append(artifact)
+
+    return artifacts2download
+
+
+def _download_artifacts(art, artifacts2download, art_repo, outdir):
+    for date, artifacts in artifacts2download.items():
+        run_times = [artifact.lastModified.time() for artifact in artifacts]
+        latest = max(run_times)
+        nightly_idx = run_times.index(latest)
+        artifact = artifacts[nightly_idx]
+        xmlfile = art_repo + artifact.uri
+        file = outdir / str(artifact.uri).split(sep="/")[-1]
+
+        # Only download the files if not already there or the sizes do not match
+        download = False
+        if file.exists():
+            if artifact.size > file.stat().st_size:
+                download = True
+        else:
+            download = True
+        if download:
+            print(artifact.uri)
+            art.artifacts.download(xmlfile, str(outdir))
+
+
 def get_artifacts(credentials_file, art_repo, py_version, outdir=None, start_date=None, end_date=None):
     """
     Finds and downloads .xml files from with Artifactory repository for the given period.
@@ -50,16 +111,8 @@ def get_artifacts(credentials_file, art_repo, py_version, outdir=None, start_dat
         Full path for the output directory.
 
     """
-    # Get artifactory Credentials
-    art_username, art_api_key = _get_artifactory_credentials(credentials_file)
-
     try:
-        # Do basic authentication
-        art = pyartifactory.Artifactory(url="https://bytesalad.stsci.edu/artifactory",
-                                        auth=(art_username, art_api_key), api_version=1)
-
-        # Get the artifacts with user credentials
-        artifacts = art.artifacts.list(art_repo, depth=2)
+        art, artifacts = _list_artifacts(credentials_file, art_repo)
 
     except pyartifactory.exception.ArtifactoryError:
         raise ValueError("Artifactory credentials not valid.")
@@ -71,47 +124,10 @@ def get_artifacts(credentials_file, art_repo, py_version, outdir=None, start_dat
             outdir.mkdir()
 
     print(" Searching Artifactory...")
-    artifacts2download = {}
-    for artifact in artifacts.files:
-        # Proceed with download if within the desired dates
-        artifact_datetime = artifact.lastModified
-        if start_date is not None:
-            if artifact_datetime <= start_date or artifact_datetime > end_date:
-                continue
-
-        if ".xml" in artifact.uri:
-            if "jwst" in art_repo:
-                # Only download if the run was in main
-                if "rc" not in artifact.uri:
-                    continue
-
-            # Make sure that the file is the result of the right python version run
-            if py_version not in artifact.uri:
-                continue
-            if artifact_datetime.date() not in artifacts2download:
-                artifacts2download[artifact_datetime.date()] = [artifact]
-            else:
-                artifacts2download[artifact_datetime.date()].append(artifact)
+    artifacts2download = _filter_artifacts(art_repo, artifacts, start_date, end_date, py_version)
 
     print(" Downloading .xml files...")
-    for date, artifacts in artifacts2download.items():
-        run_times = [artifact.lastModified.time() for artifact in artifacts]
-        latest = max(run_times)
-        nightly_idx = run_times.index(latest)
-        artifact = artifacts[nightly_idx]
-        xmlfile = art_repo + artifact.uri
-        file = outdir / str(artifact.uri).split(sep="/")[-1]
-
-        # Only download the files if not already there or the sizes do not match
-        download = False
-        if file.exists():
-            if artifact.size > file.stat().st_size:
-                download = True
-        else:
-            download = True
-        if download:
-            print(artifact.uri)
-            art.artifacts.download(xmlfile, str(outdir))
+    _download_artifacts(art, artifacts2download, art_repo, outdir)
 
     print(" Finished downloading artifacts at: ", outdir)
 

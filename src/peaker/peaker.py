@@ -68,7 +68,7 @@ def main():
 
     # Get the appropriate Artifactory repo name and the
     # corresponding description of pool tests
-    supperted_missions = {
+    supported_missions = {
         "jwst": {
             "art_repo": ART_JWST_REPO,
             "pools": POOLS_JWST
@@ -78,12 +78,12 @@ def main():
             "pools": POOLS_ROMAN
         }
     }
-    if mission not in supperted_missions:
-        print("\n Supported missions are: {}".format(", ".join(supperted_missions.keys())))
+    if mission not in supported_missions:
+        print("\n Supported missions are: {}".format(", ".join(supported_missions.keys())))
         raise ValueError("\n*** Mission {} is not supported. *** \n".format(mission.upper()))
     else:
-        art_repo = supperted_missions[mission]["art_repo"]
-        pools = supperted_missions[mission]["pools"]
+        art_repo = supported_missions[mission]["art_repo"]
+        pools = supported_missions[mission]["pools"]
     print("\n ---> Repository being searched: {} \n".format(art_repo))
 
     # Set the start and end dates in UTC
