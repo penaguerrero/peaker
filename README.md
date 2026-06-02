@@ -43,7 +43,8 @@ Run `peaker` from the terminal as:
 ## Optional Arguments
 
 ``--xmldir or -x``
-    Path of the directory to save/read the XML files.
+    Path of the directory to save/read the XML files. If this flag is given, the
+    Artifactory search will be skipped, e.g. -x=path/to/xml_files.
 
 ``--mission or -m``
     Name of the mission to analyze, i.e. -m=roman. Default is jwst.
@@ -69,8 +70,6 @@ Run `peaker` from the terminal as:
     Python version tested in the regression tests, e.g. -v=3.11. Default is 3.12. Regression
     Tests will usually test at least 3 versions of Python.
 
-``-s``
-    Skip downloading the xml files. This option requires the -x flag as well.
 
 ## Outputs
 
