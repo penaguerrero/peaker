@@ -30,20 +30,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-*.png
-/*.png
-*/*/*.png
-*.pdf
-/*.pdf
-/*/*.pdf
-*.csv
-/*.csv
-/*/*.csv
 .DS_Store
-*/*/.DS_Store
-*/*/*/.DS_Store
-*/*/*/*/.DS_Store
-*/*/*/*/*/.DS_Store
 
 # Installer logs
 pip-log.txt
