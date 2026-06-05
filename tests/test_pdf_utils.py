@@ -39,6 +39,7 @@ def test_create_pdf(mission, tmpdir, expected_output):
     assert all(output.tests_ran) == all(expected_output.tests_ran)
     assert all(output.report_table) == all(expected_output.report_table)
     assert pdf_path.exists()
+    assert pdf_path.stat().st_size > 7500
 
 
 def test_get_plt_path(tmpdir, mk_plotsdir):

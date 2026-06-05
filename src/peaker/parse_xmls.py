@@ -26,10 +26,12 @@ def _parse_single_xml(filename):
             test_date = datetime.strptime(items.attrib["timestamp"], date_format)
             # Also get the failures variable
             failures = int(items.attrib["failures"])
+        else:
+            raise ValueError("XML format change!")
 
     # Sanity check
     if not test_date:
-        raise ValueError("No test date found in xml file.")
+        raise ValueError("No test date found in XML file.")
 
     # All test cases will be under the testsuite element.
     for element in root.iter("testcase"):
@@ -109,7 +111,11 @@ def parse_xmls(xmldir, localtz):
     tests_ran = {}
     oldest_date, latest_date = datetime.now(UTC).astimezone(), None
     for i, xmlfile in enumerate(xml_files):
-        ut_test_date, failures, peakmem_dict = _parse_single_xml(xmlfile)
+        try:
+            ut_test_date, failures, peakmem_dict = _parse_single_xml(xmlfile)
+        except ValueError:
+            print("   Format issue! Skipping file: ", xmlfile)
+            continue
 
         # Convert timestamp from UTC to local time
         test_date = ut_test_date.astimezone(ZoneInfo(localtz))

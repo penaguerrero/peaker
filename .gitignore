@@ -3,6 +3,7 @@ peaker_outputs
 _version.py
 *.pdf
 *.csv
+*.png
 
 # System
 .DS_Store

@@ -49,11 +49,6 @@ def _filter_artifacts(art_repo, artifacts, start_date, end_date, py_version):
                 continue
 
         if ".xml" in artifact.uri:
-            #if "jwst" in art_repo:
-            #    # Only download if the run was in main
-            #    if "rc" not in artifact.uri:
-            #        continue
-
             # Make sure that the file is the result of the right python version run
             if py_version not in artifact.uri:
                 continue
@@ -66,6 +61,8 @@ def _filter_artifacts(art_repo, artifacts, start_date, end_date, py_version):
 
 
 def _download_artifacts(art, artifacts2download, art_repo, outdir):
+    # Currently, the branch information is lost when the artifact is uploaded, so take the file
+    # that was last modified in the day to try and ensure that this was the automated run on main.
     for date, artifacts in artifacts2download.items():
         run_times = [artifact.lastModified.time() for artifact in artifacts]
         latest = max(run_times)

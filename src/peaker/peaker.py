@@ -45,7 +45,7 @@ def main():
                         default="EST",
                         help="Timezone to convert UTC time from xml files in the plots and report, e.g. -t=GMT. "
                              "The code takes all IANA time zone strings.")
-    parser.add_argument("--version", "-v",
+    parser.add_argument("--python-version", "-v",
                         dest="py_version",
                         action="store",
                         default="3.12",
