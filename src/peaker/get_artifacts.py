@@ -22,7 +22,7 @@ def _get_artifactory_credentials(credentials_file):
                 art_api_key = pydantic.types.SecretStr(value)
             if art_username is not None and art_api_key is not None:
                 break
-    if art_username is None and art_api_key is None:
+    if art_username is None or art_api_key is None:
         raise ValueError("No credentials found.")
     return art_username, art_api_key
 
@@ -35,7 +35,7 @@ def _list_artifacts(credentials_file, art_repo):
         # Do basic authentication
         art = pyartifactory.Artifactory(url="https://bytesalad.stsci.edu/artifactory",
                                         auth=(art_username, art_api_key), api_version=1)
-    # catch a timeout connection issue or a pyartifactory error and exit gracefully 
+    # catch a timeout connection issue or a pyartifactory error and exit gracefully
     except (requests.exceptions.ConnectTimeout, pyartifactory.exception.ArtifactoryError):
         exit()
 

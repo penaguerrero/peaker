@@ -18,12 +18,13 @@ def main():
     parser = argparse.ArgumentParser(description="Display peak memory history for Regression Tests.")
     parser.add_argument("art_credentials",
                         action="store",
-                        help="File with Artifactor credentials.")
+                        help="File with Artifactory credentials.")
     parser.add_argument("--xmldir", "-x",
                         action="store",
                         default=None,
-                        help="Path of the directory to save/read the XML files. If this flag is given, the "
-                             "Artifactory search will be skipped, e.g. -x=path/to/xml_files.")
+                        help="Path of the directory to save/read the XML files. If this flag is set, "
+                             "Artifactory will not be queried and all files will assume to exist at the"
+                             "given path. Example: -x=path/to/xml_files.")
     parser.add_argument("--mission", "-m",
                         action="store",
                         default="jwst",
@@ -38,7 +39,8 @@ def main():
                         action="store",
                         default=None,
                         help="Period of time to show. Input should be start to end, in the format year-month-day, "
-                             "local time, e.g. -p=2026-01-23to2026-02-27. Default is download everything up to today.")
+                             "local time, e.g. -p=2026-01-23to2026-02-27. Default is download everything up to today. "
+                             "If period and days are specified, days will override period.")
     parser.add_argument("--timezone", "-t",
                         dest="localtz",
                         action="store",
@@ -54,7 +56,7 @@ def main():
                         dest="with_failures",
                         action="store_true",
                         default=False,
-                        help="Include XML files that have failures > 0. Default is False.")
+                        help="Include XML files that contain test failures. Default is False, i.e. no failures.")
 
     args = parser.parse_args()
 
@@ -107,12 +109,8 @@ def main():
 
     # Sanity check
     if start_date is not None and end_date is not None:
-        if end_date < start_date:
-            print("Start date must be before end date. Switching start date to end date and vice versa.")
-            new_end_date = start_date
-            new_start_date = end_date
-            start_date = new_start_date
-            end_date = new_end_date
+        if end_date <= start_date:
+            raise ValueError("End date cannot be earlier than or equal to start date.")
 
     # Get relevant xml files from artifactory
     if xmldir is None:

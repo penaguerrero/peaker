@@ -18,6 +18,13 @@ def test_bad_period_format(monkeypatch):
     pytest.raises(ValueError, lambda: peaker_main())
 
 
+def test_bad_dates(monkeypatch):
+    monkeypatch.setattr(sys, 'argv', ['peaker',
+                                      'art_credentials',
+                                      '--period', '2026/02/11to2026/02/02'])
+    pytest.raises(ValueError, lambda: peaker_main())
+
+
 def test_bad_xmldir(monkeypatch):
     monkeypatch.setattr(sys, 'argv', ['peaker',
                                       'art_credentials',
